@@ -1,0 +1,97 @@
+<#include "/common/layout_dl.html">
+<@header>
+<link rel="stylesheet" href="/plugins/bootstrap-fileinput/css/fileinput.min.css">
+</@header>
+<@body>
+ <form class="form-horizontal layui-form layui-form-pane"  method="post" action="/gm/member/doEdit">
+  <div class="box-body">
+    <div class="form-group">
+      <label for="uname" class="col-sm-2 control-label">用户名</label>
+      <input type="hidden" value="${sysUser.id}" name="id">
+      <div class="col-sm-10">
+     	<input type="text" id="uname" name="account" value="${(sysUser.account)!}" class="form-control" placeholder="请输入用户名" lay-verify="required|username">
+    	</div>
+    </div>
+   
+    <div class="form-group">
+      <label for="password"  class="col-sm-2 control-label">密码</label>
+      <div class="col-sm-10">
+      <input type="password" class="form-control"  id="password"  name="password" placeholder="密码为空则不修改密码" lay-verify="pass">
+    	</div>
+    </div>
+    <div class="form-group">
+      <label for="password"  class="col-sm-2 control-label">确认密码</label>
+      <div class="col-sm-10">
+      <input type="password" class="form-control"  id="confpassword"  name="confpwd" placeholder="请输入密码" lay-verify="pass|eqPwd">
+    	</div>
+    </div>
+    <div class="form-group">
+           <label  class="col-sm-2 control-label">描述</label>
+           <div class="col-sm-10">
+           <textarea class="form-control" name="telephone" rows="3" placeholder="请输入描述，最多300个字符 ..." >${(sysUser.telephone)!}</textarea>
+           </div>
+    </div>
+    <input type="hidden" value="${(sysUser.userheadpic)!}" id="userImg" name="userheadpic">
+     <div class="form-group">
+           <label for="systemLogo" class="col-sm-2 control-label">头像</label>
+           <div class="col-sm-10">
+           <input class="form-control" name="file" type="file" class="file-loading" id="systemLogo">
+           </div>
+     </div>
+     <#if info??>
+     <div class="form-group">
+          <div  class="alert alert-success alert-dismissible">
+		      <h4 style="margin-bottom: 0px;"><i class="fa fa-info"></i> ${info!}</h4>
+		  </div>
+     </div>
+     </#if>
+       
+       <div class="form-group">
+       	<label  class="col-sm-2 control-label"></label>
+       	<div class="col-sm-10">
+       		 <button type="submit" class="btn btn-success" lay-submit lay-filter="submit"><i class="fa fa-save"></i>  提 交</button>
+       	</div>
+       </div>
+  </div><!-- /.box-body -->
+</form>
+</@body>
+<@footer>
+<script src="/plugins/bootstrap-fileinput/js/fileinput.min.js"></script>
+<script src="/plugins/bootstrap-fileinput/js/locales/zh.js"></script>
+<script>
+//初始化fileinput控件（第一次初始化）
+function initFileInput(ctrlName, uploadUrl) {    
+    var control = $('#' + ctrlName); 
+
+    control.fileinput({
+    	
+    	 initialPreview: [
+             '${(sysUser.userheadpic)!}'
+         ],
+         initialPreviewAsData: true,
+         initialPreviewConfig: [
+             {caption: "${(sysUser.userheadpic)!}", size: 930321, width: "120px", key: '${(sysUser.id)!}', showDelete: false}
+         ],
+         deleteUrl: "/file/delete",
+    	
+        language: 'zh', //设置语言
+        uploadUrl: uploadUrl, //上传的地址
+        allowedFileExtensions : ['jpg', 'png','gif'],//接收的文件后缀
+        showUpload: false, //是否显示上传按钮
+        showCaption: false,//是否显示标题
+        browseClass: "btn btn-primary"       
+    });
+}
+	
+initFileInput("systemLogo", "/file/upload");
+
+//上传成功回调函数
+$('#systemLogo').on("fileuploaded", function(event, data, previewId, index) {
+    var result = data.response;
+    console.log(result.status);
+    console.log(result.urls);
+    $('#userImg').val(result.urls[0]);
+});
+
+</script>
+</@footer>
